@@ -17,17 +17,17 @@ export interface UserDocument extends User, Document {
   _id: Types.ObjectId
 }
 
-interface UserSignInData {
+interface UserSignInInput {
   email: string
   password: string
 }
 
-export interface UserSingUpInput {
-  data: UserSignInData & { name: string }
+export interface UserSignUpArgs {
+  data: UserSignInInput & { name: string }
 }
 
-export interface UserSingInInput {
-  data: UserSignInData
+export interface UserSignInArgs {
+  data: UserSignInInput
 }
 
 export interface AuthUser {
