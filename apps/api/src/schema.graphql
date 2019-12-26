@@ -1,18 +1,73 @@
-type User {
-  id: ID!
-  name: String!
-  email: String!
+directive @auth(role: UserRole = USER) on FIELD_DEFINITION
+
+# User
+enum UserRole {
+  USER
+  ADMIN
 }
 
-input UserInput {
+type User {
+  _id: ID!
   name: String!
   email: String!
+  role: UserRole!
+}
+
+input UserSingInInput {
+  email: String!
+  password: String!
+}
+
+input UserSignUpInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+# Product
+type Product {
+  _id: ID!
+  name: String!
+  description: String
+  price: Float!
+  unit: Unit!
+}
+
+input ProductCreateInput {
+  name: String!
+  description: String
+  price: Float!
+  unit: Unit!
+}
+
+input ProductUpdateInput {
+  name: String
+  description: String
+  price: Float
+  unit: Unit
+}
+
+enum Unit {
+  UN
+  LT
+  GR
+  KG
 }
 
 type Query {
-  users: [User!]!
+  products: [Product!]! @auth
+  product(_id: ID!): Product! @auth(role: ADMIN)
 }
 
 type Mutation {
-  createUser(data: UserInput!): User!
+  signin(data: UserSingInInput!): AuthPayload!
+  signup(data: UserSignUpInput!): AuthPayload!
+  createProduct(data: ProductCreateInput!): Product!
+  updateProduct(data: ProductUpdateInput!, _id: ID!): Product!
+  deleteProduct(_id: ID!): Product!
 }
