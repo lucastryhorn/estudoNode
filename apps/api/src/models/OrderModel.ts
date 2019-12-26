@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { OrderDocument } from '../types'
 
-const ordemItemSchema = new Schema(
+const orderItemSchema = new Schema(
   {
     product: {
       type: Schema.Types.ObjectId,
@@ -36,7 +36,7 @@ const orderSchema = new Schema(
       ],
       default: 'WAITING_PAYMENT',
     },
-    items: [ordemItemSchema],
+    items: [orderItemSchema],
   },
   { timestamps: true, useNestedStrict: true },
 )
