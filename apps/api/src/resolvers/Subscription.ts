@@ -7,7 +7,6 @@ import {
   UserRole,
 } from '../types'
 import { withFilter } from 'graphql-yoga'
-import { Types } from 'mongoose'
 
 const orderSubscribeFn: Resolver<SubscriptionArgs> = (_, args, ctx) => {
   const { mutationIn } = args.where

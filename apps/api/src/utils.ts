@@ -4,16 +4,29 @@ import {
   TokenPayload,
   OrderItemSubdocument,
   PaginationArgs,
+  GetFieldsOptions,
 } from './types'
 import { CustomError } from './errors'
 import { SignOptions, sign } from 'jsonwebtoken'
+import { GraphQLResolveInfo } from 'graphql'
+import { fieldsList } from 'graphql-fields-list'
 
 const isMongoId = (value: string): boolean => Types.ObjectId.isValid(value)
 
 const findDocument = async <T extends Document>(
   opts: FindDocumentOptions,
 ): Promise<T> => {
-  const { model, db, field, value, where, message, errorCode, extension } = opts
+  const {
+    model,
+    db,
+    field,
+    value,
+    where,
+    message,
+    errorCode,
+    extension,
+    select,
+  } = opts
 
   if (field === '_id' && !isMongoId(value)) {
     throw new CustomError(`Invalid ID value for '${value}'`, 'INVALID_ID_ERROR')
@@ -21,6 +34,7 @@ const findDocument = async <T extends Document>(
 
   const document = await ((db[model] as unknown) as Model<T>)
     .findOne(where || { [field]: value })
+    .select(select)
     .exec()
 
   if (!document) {
@@ -132,6 +146,21 @@ const buildConditions = (
     }
   }, {})
 
+const getFields = (
+  info: GraphQLResolveInfo,
+  options?: GetFieldsOptions,
+): string => {
+  let fields = fieldsList(info)
+
+  if (options) {
+    const { include = [], skip = [] } = options
+    fields = fields.concat(include)
+    fields = fields.filter(field => !skip.includes(field))
+  }
+
+  return fields.join(' ')
+}
+
 export {
   buildOrderByResolver,
   isMongoId,
@@ -140,4 +169,5 @@ export {
   issueToken,
   paginateAndSort,
   buildConditions,
+  getFields,
 }
